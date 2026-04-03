@@ -1,0 +1,56 @@
+.thankyou {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.thankyou-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #34D399, #6EE7B7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  box-shadow: 0 8px 32px rgba(52, 211, 153, 0.3);
+  animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+
+  .check {
+    font-size: 42px;
+    color: white;
+    font-weight: 700;
+  }
+}
+
+@keyframes popIn {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+.thankyou-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0E2F56;
+  margin-bottom: 12px;
+}
+
+.thankyou-text {
+  font-size: 15px;
+  color: #5e6e82;
+  line-height: 1.7;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.thankyou-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 28px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  color: #059669;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+}

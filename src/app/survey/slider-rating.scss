@@ -1,0 +1,104 @@
+.slider-card {
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 1px solid #e8eff8;
+  margin-bottom: 14px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #f0f6ff;
+    border-color: #d0e0f0;
+  }
+
+  &.has-value {
+    border-color: #b8d4f0;
+    background: #f4f9ff;
+  }
+
+  &.error {
+    border-color: #fca5a5;
+    background: #fef2f2;
+    animation: shake 0.4s ease;
+
+    .slider-label {
+      color: #dc2626;
+    }
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.slider-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a2332;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.slider-wrap {
+  padding: 0 4px;
+}
+
+.slider-labels-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: -2px;
+  padding: 0 2px;
+}
+
+.custom-slider {
+  width: 100%;
+}
+
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px;
+  margin-top: -4px;
+}
+
+.tick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tick-num {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  transition: all 0.2s;
+}
+
+.tick.active .tick-num {
+  color: #64748b;
+}
+
+.tick.current .tick-num {
+  color: #0E2F56;
+  transform: scale(1.2);
+}
+
+.slider-value-label {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0E2F56;
+  margin-top: 6px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.2s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

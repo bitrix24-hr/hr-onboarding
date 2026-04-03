@@ -1,0 +1,34 @@
+<div class="comment-step">
+  <div class="step-header">
+    <div class="step-number">4</div>
+    <div class="step-header-text">
+      <div class="step-title">Обратная связь</div>
+      <div class="step-subtitle">Шаг 4 из 4 — почти готово!</div>
+    </div>
+  </div>
+
+  <div class="comment-prompt">
+    Напиши всё, что хочешь — вопросы, пожелания или просто впечатления 💬
+  </div>
+
+  <mat-form-field appearance="outline" class="comment-field">
+    <mat-label>Твой комментарий</mat-label>
+    <textarea
+      matInput
+      [(ngModel)]="comment"
+      placeholder="Это необязательно, но нам будет очень ценно узнать твоё мнение..."
+      rows="5"
+    ></textarea>
+  </mat-form-field>
+
+  <div class="btn-row">
+    <button mat-stroked-button class="btn-back" (click)="prev.emit()" [disabled]="sending">← Назад</button>
+    <button mat-flat-button class="btn-submit" (click)="onSubmit()" [disabled]="sending">
+      @if (sending) {
+        Отправка...
+      } @else {
+        Отправить ✓
+      }
+    </button>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="rating-step">
+  <div class="step-header">
+    <div class="step-number">{{ stepNumber() }}</div>
+    <div class="step-header-text">
+      <div class="step-title">{{ step().title }}</div>
+      <div class="step-subtitle">{{ step().subtitle }}</div>
+    </div>
+  </div>
+
+  @if (step().description) {
+    <div class="step-desc">
+      {{ step().description }}
+    </div>
+  }
+
+  @for (q of step().questions; track q.key) {
+    @if (q.type === 'text') {
+      <div class="text-group">
+        <label class="text-label">{{ q.label }}</label>
+        <textarea
+          class="text-input"
+          [placeholder]="'Напиши здесь...'"
+          (input)="onTextChange(q.key, $event)"
+        ></textarea>
+      </div>
+    } @else {
+      <app-slider-rating
+        [label]="q.label"
+        [showError]="isError(q.key)"
+        (valueChange)="onRatingChange(q.key, $event)"
+      />
+    }
+  }
+
+  @if (showValidation && unanswered.length > 0) {
+    <div class="validation-msg">
+      ⚠️ Пожалуйста, ответь на все вопросы
+    </div>
+  }
+
+  <div class="btn-row">
+    <button mat-stroked-button class="btn-back" (click)="prev.emit()">← Назад</button>
+    <button mat-flat-button class="btn-next" (click)="onNext()">Далее →</button>
+  </div>
+</div>

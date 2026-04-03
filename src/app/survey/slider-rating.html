@@ -1,0 +1,22 @@
+<div class="slider-card" [class.has-value]="currentValue() > 0" [class.error]="showError()">
+  <div class="slider-label">{{ label() }}</div>
+  <div class="slider-wrap">
+    <div class="slider-labels-row">
+      <span>Совсем нет</span>
+      <span>Полностью да</span>
+    </div>
+    <mat-slider [min]="1" [max]="5" [step]="1" [discrete]="true" class="custom-slider">
+      <input matSliderThumb [value]="currentValue() || 3" (valueChange)="onValueChange($event)" />
+    </mat-slider>
+    <div class="slider-ticks">
+      @for (tick of ticks; track tick) {
+        <div class="tick" [class.active]="currentValue() >= tick" [class.current]="currentValue() === tick">
+          <span class="tick-num">{{ tick }}</span>
+        </div>
+      }
+    </div>
+  </div>
+  <div class="slider-value-label" [class.visible]="currentValue() > 0">
+    {{ valueLabel() }}
+  </div>
+</div>

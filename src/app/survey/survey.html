@@ -1,0 +1,55 @@
+<div class="survey-shell">
+  <div class="survey-header">
+    <div class="header-brand">
+      <img src="bitrix24-logo.svg" alt="Битрикс24" class="brand-logo" />
+      <span class="brand-name">Битрикс24</span>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="survey.progress()"></div>
+    </div>
+  </div>
+
+  <div class="survey-card">
+    @if (survey.config(); as cfg) {
+      <!-- Welcome -->
+      @if (survey.currentStep() === 0) {
+        <app-welcome
+          [userName]="survey.userName()"
+          [badge]="cfg.welcomeBadge"
+          [title]="cfg.welcomeTitle"
+          [text]="cfg.welcomeText"
+          (start)="onNext()"
+        />
+      }
+
+      <!-- Rating steps -->
+      @for (step of cfg.steps; track step.title; let i = $index) {
+        @if (survey.currentStep() === i + 1) {
+          <app-rating-step
+            [step]="step"
+            [stepNumber]="i + 1"
+            [totalSteps]="cfg.steps.length + 1"
+            (next)="onNext()"
+            (prev)="onPrev()"
+          />
+        }
+      }
+
+      <!-- Comment -->
+      @if (survey.currentStep() === cfg.steps.length + 1) {
+        <app-comment-step
+          (prev)="onPrev()"
+          (submit)="onSubmit()"
+        />
+      }
+
+      <!-- Thank you -->
+      @if (survey.currentStep() === cfg.steps.length + 2) {
+        <app-thankyou [userName]="survey.userName()" />
+      }
+    }
+  </div>
+</div>
