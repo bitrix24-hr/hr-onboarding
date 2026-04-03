@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Дашборд — Онбординг</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #0E2F56;
+            color: white;
+            padding: 24px 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 20px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 16px;
+        }
+
+        .sidebar-brand img {
+            width: 28px; height: 28px; border-radius: 6px;
+        }
+
+        .sidebar-brand span {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .sidebar-nav a.active {
+            border-left: 3px solid #2FC6F6;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            padding: 28px 32px;
+            overflow-x: hidden;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .main-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0E2F56;
+        }
+
+        .main-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-filter {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+        }
+
+        .btn-filter:hover {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+        }
+
+        /* Alert banner */
+        .alerts-section {
+            margin-bottom: 24px;
+        }
+
+        .alerts-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .alert-card {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 18px;
+            border-left: 4px solid #ef4444;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .alert-avatar {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            background: #fef2f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        .alert-text strong {
+            font-size: 13px;
+            color: #1e293b;
+        }
+
+        .alert-text p {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 1px;
+        }
+
+        .alert-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* Stats row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0E2F56;
+        }
+
+        .stat-sub {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .stat-value.green { color: #16a34a; }
+        .stat-value.yellow { color: #d97706; }
+        .stat-value.red { color: #dc2626; }
+
+        /* Charts row */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0E2F56;
+            margin-bottom: 16px;
+        }
+
+        .chart-wrap {
+            position: relative;
+            height: 220px;
+        }
+
+        /* Employee table */
+        .table-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0E2F56;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            padding: 8px 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        td {
+            padding: 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #f8fafc;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-green { background: #ecfdf5; color: #16a34a; }
+        .status-yellow { background: #fefce8; color: #d97706; }
+        .status-red { background: #fef2f2; color: #dc2626; }
+
+        .avg-score {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .avg-green { color: #16a34a; }
+        .avg-yellow { color: #d97706; }
+        .avg-red { color: #dc2626; }
+
+        .iteration-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            background: #f0f7ff;
+            color: #0E2F56;
+            font-weight: 500;
+        }
+
+        /* Pages */
+        .page { display: none; }
+        .page.active { display: block; animation: pageIn 0.3s ease; }
+
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Employee cards */
+        .employee-cards {
+            display: grid;
+            gap: 16px;
+        }
+
+        .emp-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .emp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .emp-id {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0E2F56;
+        }
+
+        .emp-scores {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .emp-score-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .emp-score-label {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .emp-details {
+            margin-bottom: 12px;
+        }
+
+        .emp-detail-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .emp-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .emp-comment {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .emp-comment p {
+            font-size: 13px;
+            color: #475569;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="onboarding-survey/public/bitrix24-logo.svg" alt="Б24" />
+                <span>Битрикс24</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active" onclick="showPage('dashboard', this)">📊 Дашборд</a>
+                <a href="#" onclick="showPage('employees', this)">👥 Сотрудники</a>
+                <a href="#" onclick="showPage('alerts', this)">🔔 Алерты</a>
+                <a href="#" onclick="showPage('settings', this)">⚙️ Настройки</a>
+            </nav>
+        </aside>
+
+        <main class="main">
+
+            <!-- PAGE: Dashboard -->
+            <div class="page active" id="page-dashboard">
+            <div class="main-header">
+                <div>
+                    <div class="main-title">Онбординг-фидбек</div>
+                    <div class="main-subtitle">Сводка по сотрудникам на испытательном сроке</div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-filter">📅 Апрель 2026</button>
+                    <button class="btn-filter">⬇ Экспорт</button>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="alerts-section">
+                <div class="alerts-title">🚨 Требуют внимания</div>
+                <div class="alert-card">
+                    <div class="alert-info">
+                        <div class="alert-avatar">!</div>
+                        <div class="alert-text">
+                            <strong>ID 1042 — Итерация: 1 месяц</strong>
+                            <p>Средний балл 2.1 · Низкие оценки: отношения с руководителем (1), соизмеримость оплаты (1)</p>
+                        </div>
+                    </div>
+                    <div class="alert-badge">Критично</div>
+                </div>
+                <div class="alert-card">
+                    <div class="alert-info">
+                        <div class="alert-avatar">!</div>
+                        <div class="alert-text">
+                            <strong>ID 1087 — Итерация: 1 неделя</strong>
+                            <p>Средний балл 2.8 · Низкие оценки: информация по задачам (2), оценка на ИС (1)</p>
+                        </div>
+                    </div>
+                    <div class="alert-badge">Критично</div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Сотрудников на ИС</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-sub">активных анкет</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Средний балл</div>
+                    <div class="stat-value green">4.1</div>
+                    <div class="stat-sub">по всем итерациям</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Заполняемость</div>
+                    <div class="stat-value">83%</div>
+                    <div class="stat-sub">10 из 12 заполнили</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Красные флаги</div>
+                    <div class="stat-value red">2</div>
+                    <div class="stat-sub">требуют внимания</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-title">Средние оценки по категориям</div>
+                    <div class="chart-wrap">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Динамика по итерациям</div>
+                    <div class="chart-wrap">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">Все сотрудники на ИС</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Итерация</th>
+                            <th>Дата</th>
+                            <th>Средний балл</th>
+                            <th>Мин. оценка</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1042</strong></td>
+                            <td><span class="iteration-badge">1 месяц</span></td>
+                            <td>28.03.2026</td>
+                            <td><span class="avg-score avg-red">2.1</span></td>
+                            <td><span class="avg-score avg-red">1</span></td>
+                            <td><span class="status-badge status-red">Критично</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>1087</strong></td>
+                            <td><span class="iteration-badge">1 неделя</span></td>
+                            <td>01.04.2026</td>
+                            <td><span class="avg-score avg-red">2.8</span></td>
+                            <td><span class="avg-score avg-red">1</span></td>
+                            <td><span class="status-badge status-red">Критично</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>1055</strong></td>
+                            <td><span class="iteration-badge">2 месяц</span></td>
+                            <td>25.03.2026</td>
+                            <td><span class="avg-score avg-yellow">3.4</span></td>
+                            <td><span class="avg-score avg-yellow">2</span></td>
+                            <td><span class="status-badge status-yellow">Внимание</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>1061</strong></td>
+                            <td><span class="iteration-badge">1 неделя</span></td>
+                            <td>02.04.2026</td>
+                            <td><span class="avg-score avg-green">4.3</span></td>
+                            <td><span class="avg-score avg-green">3</span></td>
+                            <td><span class="status-badge status-green">Норма</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>1034</strong></td>
+                            <td><span class="iteration-badge">3 месяц</span></td>
+                            <td>20.03.2026</td>
+                            <td><span class="avg-score avg-green">4.6</span></td>
+                            <td><span class="avg-score avg-green">4</span></td>
+                            <td><span class="status-badge status-green">Норма</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>1078</strong></td>
+                            <td><span class="iteration-badge">1 месяц</span></td>
+                            <td>30.03.2026</td>
+                            <td><span class="avg-score avg-green">4.1</span></td>
+                            <td><span class="avg-score avg-green">3</span></td>
+                            <td><span class="status-badge status-green">Норма</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>1091</strong></td>
+                            <td><span class="iteration-badge">1 неделя</span></td>
+                            <td>03.04.2026</td>
+                            <td><span class="avg-score avg-green">4.8</span></td>
+                            <td><span class="avg-score avg-green">4</span></td>
+                            <td><span class="status-badge status-green">Норма</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div><!-- /page-dashboard -->
+
+            <!-- PAGE: Employees -->
+            <div class="page" id="page-employees">
+                <div class="main-header">
+                    <div>
+                        <div class="main-title">Сотрудники</div>
+                        <div class="main-subtitle">Детальная информация по каждому сотруднику на ИС</div>
+                    </div>
+                </div>
+
+                <!-- Employee detail cards -->
+                <div class="employee-cards">
+                    <div class="emp-card">
+                        <div class="emp-header">
+                            <div class="emp-id">ID 1042</div>
+                            <span class="status-badge status-red">Критично</span>
+                        </div>
+                        <div class="emp-scores">
+                            <div class="emp-score-item">
+                                <span class="emp-score-label">Средний балл</span>
+                                <span class="avg-score avg-red">2.1</span>
+                            </div>
+                            <div class="emp-score-item">
+                                <span class="emp-score-label">Итерация</span>
+                                <span class="iteration-badge">1 месяц</span>
+                            </div>
+                            <div class="emp-score-item">
+                                <span class="emp-score-label">Дата</span>
+                                <span>28.03.2026</span>
+                            </div>
+                        </div>
+                        <div class="emp-details">
+                            <div class="emp-detail-title">Низкие оценки:</div>
+                            <div class="emp-detail-row"><span>Отношения с руководителем</span><span class="avg-score avg-red">1</span></div>
+                            <div class="emp-detail-row"><span>Соизмеримость оплаты</span><span class="avg-score avg-red">1</span></div>
+                            <div class="emp-detail-row"><span>Ритм работы</span><span class="avg-score avg-red">2</span></div>
+                            <div class="emp-detail-row"><span>Корп. культура</span><span class="avg-score avg-yellow">3</span></div>
+                        </div>
+                        <div class="emp-comment">
+                            <div class="emp-detail-title">Комментарий:</div>
+                            <p>"Не понимаю критериев оценки моей работы, обратная связь от руководителя минимальная"</p>
+                        </div>
+                    </div>
+
+                    <div class="emp-card">
+                        <div class="emp-header">
+                            <div class="emp-id">ID 1087</div>
+                            <span class="status-badge status-red">Критично</span>
+                        </div>
+                        <div class="emp-scores">
+                            <div class="emp-score-item">
+                                <span class="emp-score-label">Средний балл</span>
+                                <span class="avg-score avg-red">2.8</span>
+                            </div>
+                            <div class="emp-score-item">
+                                <span class="emp-score-label">Итерация</span>
+                                <span class="iteration-badge">1 неделя</span>
+                            </div>
+                            <div class="emp-score-item">
+                                <span class="emp-score-label">Дата</span>
+                                <span>01.04.2026</span>
+                            </div>
+                        </div>
+                        <div class="emp-details">
+                            <div class="emp-detail-title">Низкие оценки:</div>
+                            <div class="emp-detail-row"><span>Информация по задачам</span><span class="avg-score avg-red">2</span></div>
+                            <div class="emp-detail-row"><span>Оценка на ИС</span><span class="avg-score avg-red">1</span></div>
+                            <div class="emp-detail-row"><span>К кому обращаться</span><span class="avg-score avg-red">2</span></div>
+                        </div>
+                        <div class="emp-comment">
+                            <div class="emp-detail-title">Комментарий:</div>
+                            <p>"Первый день прошёл хаотично, никто толком не объяснил что делать"</p>
+                        </div>
+                    </div>
+
+                    <div class="emp-card">
+                        <div class="emp-header">
+                            <div class="emp-id">ID 1034</div>
+                            <span class="status-badge status-green">Норма</span>
+                        </div>
+                        <div class="emp-scores">
+                            <div class="emp-score-item">
+                                <span class="emp-score-label">Средний балл</span>
+                                <span class="avg-score avg-green">4.6</span>
+                            </div>
+                            <div class="emp-score-item">
+                                <span class="emp-score-label">Итерация</span>
+                                <span class="iteration-badge">3 месяц</span>
+                            </div>
+                            <div class="emp-score-item">
+                                <span class="emp-score-label">Дата</span>
+                                <span>20.03.2026</span>
+                            </div>
+                        </div>
+                        <div class="emp-details">
+                            <div class="emp-detail-title">Все оценки 4+</div>
+                        </div>
+                        <div class="emp-comment">
+                            <div class="emp-detail-title">Комментарий:</div>
+                            <p>"Всё отлично, команда очень помогает. Спасибо!"</p>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /page-employees -->
+
+            <!-- PAGE: Alerts -->
+            <div class="page" id="page-alerts">
+                <div class="main-header">
+                    <div>
+                        <div class="main-title">Алерты</div>
+                        <div class="main-subtitle">Все уведомления о красных флагах</div>
+                    </div>
+                </div>
+
+                <div class="alert-card" style="border-left-color: #ef4444;">
+                    <div class="alert-info">
+                        <div class="alert-avatar">!</div>
+                        <div class="alert-text">
+                            <strong>ID 1042 — 1 месяц — 28.03.2026</strong>
+                            <p>Средний балл 2.1 · Отношения с руководителем (1), соизмеримость оплаты (1)</p>
+                        </div>
+                    </div>
+                    <div class="alert-badge">Критично</div>
+                </div>
+
+                <div class="alert-card" style="border-left-color: #ef4444; margin-top: 8px;">
+                    <div class="alert-info">
+                        <div class="alert-avatar">!</div>
+                        <div class="alert-text">
+                            <strong>ID 1087 — 1 неделя — 01.04.2026</strong>
+                            <p>Средний балл 2.8 · Информация по задачам (2), оценка на ИС (1)</p>
+                        </div>
+                    </div>
+                    <div class="alert-badge">Критично</div>
+                </div>
+
+                <div class="alert-card" style="border-left-color: #f59e0b; margin-top: 8px;">
+                    <div class="alert-info">
+                        <div class="alert-avatar" style="background:#fefce8; color:#d97706;">⚠</div>
+                        <div class="alert-text">
+                            <strong>ID 1055 — 2 месяц — 25.03.2026</strong>
+                            <p>Средний балл 3.4 · Внутренние процессы (2), корп. культура (2)</p>
+                        </div>
+                    </div>
+                    <div class="alert-badge" style="background:#fefce8; color:#d97706;">Внимание</div>
+                </div>
+
+                <div style="margin-top: 24px; padding: 16px 20px; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                    <div style="font-size: 14px; font-weight: 700; color: #0E2F56; margin-bottom: 8px;">📧 Email-уведомления</div>
+                    <div style="font-size: 13px; color: #64748b; line-height: 1.6;">
+                        Алерты автоматически отправляются на <strong>hr@company.ru</strong> при:<br>
+                        • Средний балл анкеты &lt; 3.0<br>
+                        • Любая оценка = 1<br>
+                        • Ключевые слова в комментариях (уволиться, конфликт, не понимаю)
+                    </div>
+                </div>
+            </div><!-- /page-alerts -->
+
+            <!-- PAGE: Settings -->
+            <div class="page" id="page-settings">
+                <div class="main-header">
+                    <div>
+                        <div class="main-title">Настройки</div>
+                        <div class="main-subtitle">Конфигурация системы онбординг-фидбека</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; gap: 16px;">
+                    <div style="background: white; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                        <div style="font-size: 14px; font-weight: 700; color: #0E2F56; margin-bottom: 12px;">🔗 Ссылки для задач в Битрикс</div>
+                        <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;">Эти ссылки вставляются в задачи:</div>
+                        <div style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; font-family: monospace; font-size: 12px; color: #334155; margin-bottom: 6px;">
+                            1 неделя: https://your-domain.com/?userId={USER_ID}&name={NAME}
+                        </div>
+                        <div style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; font-family: monospace; font-size: 12px; color: #334155;">
+                            1/2/3 месяц: https://your-domain.com/month?userId={USER_ID}&name={NAME}
+                        </div>
+                    </div>
+
+                    <div style="background: white; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                        <div style="font-size: 14px; font-weight: 700; color: #0E2F56; margin-bottom: 12px;">🚨 Пороги алертов</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="padding: 12px 16px; background: #fef2f2; border-radius: 10px;">
+                                <div style="font-size: 11px; font-weight: 600; color: #dc2626; text-transform: uppercase;">Критично</div>
+                                <div style="font-size: 13px; color: #1e293b; margin-top: 4px;">Средний балл &lt; 3.0 или любая оценка = 1</div>
+                            </div>
+                            <div style="padding: 12px 16px; background: #fefce8; border-radius: 10px;">
+                                <div style="font-size: 11px; font-weight: 600; color: #d97706; text-transform: uppercase;">Внимание</div>
+                                <div style="font-size: 13px; color: #1e293b; margin-top: 4px;">Средний балл 3.0 — 3.5 или оценка ≤ 2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border-radius: 14px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                        <div style="font-size: 14px; font-weight: 700; color: #0E2F56; margin-bottom: 12px;">📊 Источник данных</div>
+                        <div style="font-size: 13px; color: #64748b; line-height: 1.6;">
+                            Google Таблица: <strong>подключить после настройки Apps Script</strong><br>
+                            Обновление данных: при каждом открытии дашборда
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /page-settings -->
+
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        function showPage(pageId, linkEl) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            linkEl.classList.add('active');
+            event.preventDefault();
+        }
+
+        // Category chart — radar
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Руководитель',
+                    'Коллеги',
+                    'Информация',
+                    'Процессы',
+                    'Рабочее место',
+                    'Атмосфера',
+                    'Задачи'
+                ],
+                datasets: [{
+                    label: 'Средняя оценка',
+                    data: [4.2, 4.5, 3.8, 3.5, 4.1, 4.3, 3.9],
+                    borderColor: '#00AEEF',
+                    backgroundColor: 'rgba(0, 174, 239, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#00AEEF',
+                    pointRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 5,
+                        ticks: { stepSize: 1, font: { size: 10 } },
+                        pointLabels: { font: { size: 11, weight: '500' } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Trend chart — line
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['1 неделя', '1 месяц', '2 месяц', '3 месяц'],
+                datasets: [
+                    {
+                        label: 'ID 1034',
+                        data: [3.8, 4.1, 4.4, 4.6],
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22, 163, 74, 0.05)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                    },
+                    {
+                        label: 'ID 1042',
+                        data: [3.2, 2.1, null, null],
+                        borderColor: '#dc2626',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        borderDash: [4, 4],
+                    },
+                    {
+                        label: 'Среднее',
+                        data: [3.9, 4.0, 4.1, 4.2],
+                        borderColor: '#94a3b8',
+                        borderWidth: 1.5,
+                        tension: 0.3,
+                        borderDash: [2, 2],
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 1,
+                        max: 5,
+                        ticks: { stepSize: 1, font: { size: 11 } }
+                    },
+                    x: {
+                        ticks: { font: { size: 11 } }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 11 }, usePointStyle: true, padding: 16 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
