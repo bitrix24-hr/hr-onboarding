@@ -451,54 +451,11 @@
                 </div>
             </div>
 
-            <!-- Alerts -->
-            <div class="alerts-section">
-                <div class="alerts-title">🚨 Требуют внимания</div>
-                <div class="alert-card">
-                    <div class="alert-info">
-                        <div class="alert-avatar">!</div>
-                        <div class="alert-text">
-                            <strong>ID 1042 — Итерация: 1 месяц</strong>
-                            <p>Средний балл 2.1 · Низкие оценки: отношения с руководителем (1), соизмеримость оплаты (1)</p>
-                        </div>
-                    </div>
-                    <div class="alert-badge">Критично</div>
-                </div>
-                <div class="alert-card">
-                    <div class="alert-info">
-                        <div class="alert-avatar">!</div>
-                        <div class="alert-text">
-                            <strong>ID 1087 — Итерация: 1 неделя</strong>
-                            <p>Средний балл 2.8 · Низкие оценки: информация по задачам (2), оценка на ИС (1)</p>
-                        </div>
-                    </div>
-                    <div class="alert-badge">Критично</div>
-                </div>
-            </div>
+            <!-- Alerts (dynamic) -->
+            <div class="alerts-section" id="alerts-container"></div>
 
-            <!-- Stats -->
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-label">Сотрудников на ИС</div>
-                    <div class="stat-value">12</div>
-                    <div class="stat-sub">активных анкет</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Средний балл</div>
-                    <div class="stat-value green">4.1</div>
-                    <div class="stat-sub">по всем итерациям</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Заполняемость</div>
-                    <div class="stat-value">83%</div>
-                    <div class="stat-sub">10 из 12 заполнили</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Красные флаги</div>
-                    <div class="stat-value red">2</div>
-                    <div class="stat-sub">требуют внимания</div>
-                </div>
-            </div>
+            <!-- Stats (dynamic) -->
+            <div class="stats-row" id="stats-container"></div>
 
             <!-- Charts -->
             <div class="charts-row">
@@ -516,85 +473,11 @@
                 </div>
             </div>
 
-            <!-- Employee table -->
-            <div class="table-card">
-                <div class="table-header">
-                    <div class="table-title">Все сотрудники на ИС</div>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Итерация</th>
-                            <th>Дата</th>
-                            <th>Средний балл</th>
-                            <th>Мин. оценка</th>
-                            <th>Статус</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>1042</strong></td>
-                            <td><span class="iteration-badge">1 месяц</span></td>
-                            <td>28.03.2026</td>
-                            <td><span class="avg-score avg-red">2.1</span></td>
-                            <td><span class="avg-score avg-red">1</span></td>
-                            <td><span class="status-badge status-red">Критично</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>1087</strong></td>
-                            <td><span class="iteration-badge">1 неделя</span></td>
-                            <td>01.04.2026</td>
-                            <td><span class="avg-score avg-red">2.8</span></td>
-                            <td><span class="avg-score avg-red">1</span></td>
-                            <td><span class="status-badge status-red">Критично</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>1055</strong></td>
-                            <td><span class="iteration-badge">2 месяц</span></td>
-                            <td>25.03.2026</td>
-                            <td><span class="avg-score avg-yellow">3.4</span></td>
-                            <td><span class="avg-score avg-yellow">2</span></td>
-                            <td><span class="status-badge status-yellow">Внимание</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>1061</strong></td>
-                            <td><span class="iteration-badge">1 неделя</span></td>
-                            <td>02.04.2026</td>
-                            <td><span class="avg-score avg-green">4.3</span></td>
-                            <td><span class="avg-score avg-green">3</span></td>
-                            <td><span class="status-badge status-green">Норма</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>1034</strong></td>
-                            <td><span class="iteration-badge">3 месяц</span></td>
-                            <td>20.03.2026</td>
-                            <td><span class="avg-score avg-green">4.6</span></td>
-                            <td><span class="avg-score avg-green">4</span></td>
-                            <td><span class="status-badge status-green">Норма</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>1078</strong></td>
-                            <td><span class="iteration-badge">1 месяц</span></td>
-                            <td>30.03.2026</td>
-                            <td><span class="avg-score avg-green">4.1</span></td>
-                            <td><span class="avg-score avg-green">3</span></td>
-                            <td><span class="status-badge status-green">Норма</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>1091</strong></td>
-                            <td><span class="iteration-badge">1 неделя</span></td>
-                            <td>03.04.2026</td>
-                            <td><span class="avg-score avg-green">4.8</span></td>
-                            <td><span class="avg-score avg-green">4</span></td>
-                            <td><span class="status-badge status-green">Норма</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <!-- Employee table (dynamic) -->
+            <div class="table-card" id="table-container"></div>
             </div><!-- /page-dashboard -->
 
-            <!-- PAGE: Employees -->
+            <!-- PAGE: Employees (dynamic) -->
             <div class="page" id="page-employees">
                 <div class="main-header">
                     <div>
@@ -602,103 +485,10 @@
                         <div class="main-subtitle">Детальная информация по каждому сотруднику на ИС</div>
                     </div>
                 </div>
-
-                <!-- Employee detail cards -->
-                <div class="employee-cards">
-                    <div class="emp-card">
-                        <div class="emp-header">
-                            <div class="emp-id">ID 1042</div>
-                            <span class="status-badge status-red">Критично</span>
-                        </div>
-                        <div class="emp-scores">
-                            <div class="emp-score-item">
-                                <span class="emp-score-label">Средний балл</span>
-                                <span class="avg-score avg-red">2.1</span>
-                            </div>
-                            <div class="emp-score-item">
-                                <span class="emp-score-label">Итерация</span>
-                                <span class="iteration-badge">1 месяц</span>
-                            </div>
-                            <div class="emp-score-item">
-                                <span class="emp-score-label">Дата</span>
-                                <span>28.03.2026</span>
-                            </div>
-                        </div>
-                        <div class="emp-details">
-                            <div class="emp-detail-title">Низкие оценки:</div>
-                            <div class="emp-detail-row"><span>Отношения с руководителем</span><span class="avg-score avg-red">1</span></div>
-                            <div class="emp-detail-row"><span>Соизмеримость оплаты</span><span class="avg-score avg-red">1</span></div>
-                            <div class="emp-detail-row"><span>Ритм работы</span><span class="avg-score avg-red">2</span></div>
-                            <div class="emp-detail-row"><span>Корп. культура</span><span class="avg-score avg-yellow">3</span></div>
-                        </div>
-                        <div class="emp-comment">
-                            <div class="emp-detail-title">Комментарий:</div>
-                            <p>"Не понимаю критериев оценки моей работы, обратная связь от руководителя минимальная"</p>
-                        </div>
-                    </div>
-
-                    <div class="emp-card">
-                        <div class="emp-header">
-                            <div class="emp-id">ID 1087</div>
-                            <span class="status-badge status-red">Критично</span>
-                        </div>
-                        <div class="emp-scores">
-                            <div class="emp-score-item">
-                                <span class="emp-score-label">Средний балл</span>
-                                <span class="avg-score avg-red">2.8</span>
-                            </div>
-                            <div class="emp-score-item">
-                                <span class="emp-score-label">Итерация</span>
-                                <span class="iteration-badge">1 неделя</span>
-                            </div>
-                            <div class="emp-score-item">
-                                <span class="emp-score-label">Дата</span>
-                                <span>01.04.2026</span>
-                            </div>
-                        </div>
-                        <div class="emp-details">
-                            <div class="emp-detail-title">Низкие оценки:</div>
-                            <div class="emp-detail-row"><span>Информация по задачам</span><span class="avg-score avg-red">2</span></div>
-                            <div class="emp-detail-row"><span>Оценка на ИС</span><span class="avg-score avg-red">1</span></div>
-                            <div class="emp-detail-row"><span>К кому обращаться</span><span class="avg-score avg-red">2</span></div>
-                        </div>
-                        <div class="emp-comment">
-                            <div class="emp-detail-title">Комментарий:</div>
-                            <p>"Первый день прошёл хаотично, никто толком не объяснил что делать"</p>
-                        </div>
-                    </div>
-
-                    <div class="emp-card">
-                        <div class="emp-header">
-                            <div class="emp-id">ID 1034</div>
-                            <span class="status-badge status-green">Норма</span>
-                        </div>
-                        <div class="emp-scores">
-                            <div class="emp-score-item">
-                                <span class="emp-score-label">Средний балл</span>
-                                <span class="avg-score avg-green">4.6</span>
-                            </div>
-                            <div class="emp-score-item">
-                                <span class="emp-score-label">Итерация</span>
-                                <span class="iteration-badge">3 месяц</span>
-                            </div>
-                            <div class="emp-score-item">
-                                <span class="emp-score-label">Дата</span>
-                                <span>20.03.2026</span>
-                            </div>
-                        </div>
-                        <div class="emp-details">
-                            <div class="emp-detail-title">Все оценки 4+</div>
-                        </div>
-                        <div class="emp-comment">
-                            <div class="emp-detail-title">Комментарий:</div>
-                            <p>"Всё отлично, команда очень помогает. Спасибо!"</p>
-                        </div>
-                    </div>
-                </div>
+                <div class="employee-cards" id="employees-container"></div>
             </div><!-- /page-employees -->
 
-            <!-- PAGE: Alerts -->
+            <!-- PAGE: Alerts (dynamic) -->
             <div class="page" id="page-alerts">
                 <div class="main-header">
                     <div>
@@ -706,47 +496,13 @@
                         <div class="main-subtitle">Все уведомления о красных флагах</div>
                     </div>
                 </div>
-
-                <div class="alert-card" style="border-left-color: #ef4444;">
-                    <div class="alert-info">
-                        <div class="alert-avatar">!</div>
-                        <div class="alert-text">
-                            <strong>ID 1042 — 1 месяц — 28.03.2026</strong>
-                            <p>Средний балл 2.1 · Отношения с руководителем (1), соизмеримость оплаты (1)</p>
-                        </div>
-                    </div>
-                    <div class="alert-badge">Критично</div>
-                </div>
-
-                <div class="alert-card" style="border-left-color: #ef4444; margin-top: 8px;">
-                    <div class="alert-info">
-                        <div class="alert-avatar">!</div>
-                        <div class="alert-text">
-                            <strong>ID 1087 — 1 неделя — 01.04.2026</strong>
-                            <p>Средний балл 2.8 · Информация по задачам (2), оценка на ИС (1)</p>
-                        </div>
-                    </div>
-                    <div class="alert-badge">Критично</div>
-                </div>
-
-                <div class="alert-card" style="border-left-color: #f59e0b; margin-top: 8px;">
-                    <div class="alert-info">
-                        <div class="alert-avatar" style="background:#fefce8; color:#d97706;">⚠</div>
-                        <div class="alert-text">
-                            <strong>ID 1055 — 2 месяц — 25.03.2026</strong>
-                            <p>Средний балл 3.4 · Внутренние процессы (2), корп. культура (2)</p>
-                        </div>
-                    </div>
-                    <div class="alert-badge" style="background:#fefce8; color:#d97706;">Внимание</div>
-                </div>
-
+                <div id="alerts-page-container"></div>
                 <div style="margin-top: 24px; padding: 16px 20px; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
                     <div style="font-size: 14px; font-weight: 700; color: #0E2F56; margin-bottom: 8px;">📧 Email-уведомления</div>
                     <div style="font-size: 13px; color: #64748b; line-height: 1.6;">
-                        Алерты автоматически отправляются на <strong>hr@company.ru</strong> при:<br>
+                        Алерты автоматически отправляются на почту HR при:<br>
                         • Средний балл анкеты &lt; 3.0<br>
-                        • Любая оценка = 1<br>
-                        • Ключевые слова в комментариях (уволиться, конфликт, не понимаю)
+                        • Любая оценка = 1
                     </div>
                 </div>
             </div><!-- /page-alerts -->
@@ -800,7 +556,7 @@
     </div>
 
     <script>
-        // === ЗАГРУЗКА РЕАЛЬНЫХ ДАННЫХ ИЗ GOOGLE SHEETS ===
+        // === ПОЛНОСТЬЮ ДИНАМИЧЕСКИЙ ДАШБОРД ИЗ GOOGLE SHEETS ===
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1z9pueg9wfw8UCF3kOCfNsXPdVc7tV8vS_BCSxBSCVjs/gviz/tq?tqx=out:csv&sheet=Ответы';
 
         const FIELD_LABELS = {
@@ -816,59 +572,222 @@
             colleagues_relations: 'Отношения с коллегами', manager_relations: 'Отношения с руководителем',
             team_atmosphere: 'Атмосфера', corporate_culture: 'Корп. культура',
             internal_processes: 'Процессы', know_what_to_learn: 'Знает чему учиться',
-            colleagues_support: 'Помощь коллег', handle_tasks_well: 'Справляется с задачами',
+            colleagues_support: 'Помощь коллег (месяц)', handle_tasks_well: 'Справляется с задачами',
             enough_skills: 'Хватает навыков', enjoy_work: 'Нравится работа',
             clear_goals: 'Понимает цели', understand_processes: 'Понятны процессы',
             opinion_valued: 'Мнение учитывается', communication_speed: 'Коммуникация',
             feel_productive: 'Продуктивность', values_match: 'Ценности совпадают',
         };
 
+        // Rating field keys for finding low scores
+        const RATING_KEYS = Object.keys(FIELD_LABELS);
+
         function parseCSV(text) {
             const lines = text.split('\n').filter(l => l.trim());
             if (lines.length < 2) return [];
             const headers = lines[0].match(/"([^"]*)"/g).map(h => h.replace(/"/g, ''));
             return lines.slice(1).map(line => {
-                const values = line.match(/"([^"]*)"/g).map(v => v.replace(/"/g, ''));
+                const vals = line.match(/"([^"]*)"/g);
+                if (!vals) return null;
                 const obj = {};
-                headers.forEach((h, i) => obj[h] = values[i] || '');
+                headers.forEach((h, i) => obj[h] = vals[i] ? vals[i].replace(/"/g, '') : '');
                 return obj;
-            });
+            }).filter(r => r && r['User ID'] && r['User ID'].trim());
         }
+
+        function parseNum(val) {
+            if (!val || val === '') return NaN;
+            return parseFloat(val.replace(',', '.'));
+        }
+
+        function statusClass(s) { return s === 'Критично' ? 'red' : s === 'Внимание' ? 'yellow' : 'green'; }
+        function avgClass(v) { return v < 3 ? 'red' : v < 3.5 ? 'yellow' : 'green'; }
+        function typeLabel(t) { return t === 'month' ? 'месяц' : '1 неделя'; }
+
+        function getLowScores(row) {
+            return RATING_KEYS
+                .filter(k => { const v = parseNum(row[k]); return !isNaN(v) && v <= 2; })
+                .map(k => ({ label: FIELD_LABELS[k], score: parseNum(row[k]) }));
+        }
+
+        let chartCategory = null, chartTrend = null;
 
         async function loadRealData() {
             try {
                 const resp = await fetch(SHEET_CSV_URL);
                 const csv = await resp.text();
                 const rows = parseCSV(csv);
-                if (rows.length === 0) return;
+                if (rows.length === 0) {
+                    document.getElementById('stats-container').innerHTML = '<div class="stat-card"><div class="stat-label">Нет данных</div><div class="stat-value">0</div></div>';
+                    return;
+                }
 
-                // Добавляем реальные строки в таблицу на дашборде
-                const tbody = document.querySelector('#page-dashboard table tbody');
-                const realRows = rows.map(r => {
-                    const avg = parseFloat((r['Средний балл'] || '0').replace(',', '.'));
-                    const minScore = parseFloat((r['Мин. оценка'] || '0').replace(',', '.'));
-                    const status = r['Статус'] || 'Норма';
-                    const statusClass = status === 'Критично' ? 'red' : status === 'Внимание' ? 'yellow' : 'green';
-                    const avgClass = avg < 3 ? 'red' : avg < 3.5 ? 'yellow' : 'green';
-                    const minClass = minScore <= 1 ? 'red' : minScore <= 2 ? 'yellow' : 'green';
-                    const typeLabel = r['Тип анкеты'] === 'month' ? 'месяц' : '1 неделя';
-                    const date = r['Дата'] ? r['Дата'].split(' ')[0] : '';
+                // === STATS ===
+                const totalRows = rows.length;
+                const uniqueUsers = [...new Set(rows.map(r => r['User ID']))].length;
+                const avgs = rows.map(r => parseNum(r['Средний балл'])).filter(v => !isNaN(v));
+                const totalAvg = avgs.length > 0 ? (avgs.reduce((a,b) => a+b, 0) / avgs.length).toFixed(1) : '—';
+                const critCount = rows.filter(r => r['Статус'] === 'Критично').length;
+                const warnCount = rows.filter(r => r['Статус'] === 'Внимание').length;
 
-                    return `<tr style="background:#f0f7ff;">
-                        <td><strong>${r['User ID'] || '—'}</strong> 🟢</td>
-                        <td><span class="iteration-badge">${typeLabel}</span></td>
-                        <td>${date}</td>
-                        <td><span class="avg-score avg-${avgClass}">${avg}</span></td>
-                        <td><span class="avg-score avg-${minClass}">${minScore}</span></td>
-                        <td><span class="status-badge status-${statusClass}">${status}</span></td>
-                    </tr>`;
+                document.getElementById('stats-container').innerHTML = `
+                    <div class="stat-card"><div class="stat-label">Анкет всего</div><div class="stat-value">${totalRows}</div><div class="stat-sub">${uniqueUsers} уникальных сотрудников</div></div>
+                    <div class="stat-card"><div class="stat-label">Средний балл</div><div class="stat-value ${avgClass(parseFloat(totalAvg))}">${totalAvg}</div><div class="stat-sub">по всем анкетам</div></div>
+                    <div class="stat-card"><div class="stat-label">Красные флаги</div><div class="stat-value red">${critCount}</div><div class="stat-sub">статус "Критично"</div></div>
+                    <div class="stat-card"><div class="stat-label">Внимание</div><div class="stat-value yellow">${warnCount}</div><div class="stat-sub">статус "Внимание"</div></div>
+                `;
+
+                // === ALERTS (dashboard top) ===
+                const alertRows = rows.filter(r => r['Статус'] === 'Критично' || r['Статус'] === 'Внимание');
+                if (alertRows.length > 0) {
+                    document.getElementById('alerts-container').innerHTML = `
+                        <div class="alerts-title">🚨 Требуют внимания</div>
+                        ${alertRows.map(r => {
+                            const avg = parseNum(r['Средний балл']);
+                            const st = r['Статус'];
+                            const isCrit = st === 'Критично';
+                            const low = getLowScores(r).map(l => `${l.label} (${l.score})`).join(', ');
+                            return `<div class="alert-card" style="border-left-color: ${isCrit ? '#ef4444' : '#f59e0b'};">
+                                <div class="alert-info">
+                                    <div class="alert-avatar" ${!isCrit ? 'style="background:#fefce8;color:#d97706;"' : ''}>!</div>
+                                    <div class="alert-text">
+                                        <strong>ID ${r['User ID']} — ${typeLabel(r['Тип анкеты'])}</strong>
+                                        <p>Средний балл ${isNaN(avg) ? '—' : avg}${low ? ' · Низкие: ' + low : ''}</p>
+                                    </div>
+                                </div>
+                                <div class="alert-badge" ${!isCrit ? 'style="background:#fefce8;color:#d97706;"' : ''}>${st}</div>
+                            </div>`;
+                        }).join('')}
+                    `;
+                } else {
+                    document.getElementById('alerts-container').innerHTML = '<div style="padding:16px;background:#ecfdf5;border-radius:12px;color:#16a34a;font-weight:600;">✓ Нет красных флагов</div>';
+                }
+
+                // === TABLE ===
+                document.getElementById('table-container').innerHTML = `
+                    <div class="table-header"><div class="table-title">Все анкеты</div></div>
+                    <table><thead><tr><th>ID</th><th>Итерация</th><th>Дата</th><th>Средний балл</th><th>Мин. оценка</th><th>Статус</th></tr></thead>
+                    <tbody>${rows.map(r => {
+                        const avg = parseNum(r['Средний балл']);
+                        const min = parseNum(r['Мин. оценка']);
+                        const st = r['Статус'] || 'Норма';
+                        return `<tr>
+                            <td><strong>${r['User ID']}</strong></td>
+                            <td><span class="iteration-badge">${typeLabel(r['Тип анкеты'])}</span></td>
+                            <td>${r['Дата'] ? r['Дата'].split(' ')[0] : ''}</td>
+                            <td><span class="avg-score avg-${isNaN(avg) ? 'yellow' : avgClass(avg)}">${isNaN(avg) ? '—' : avg}</span></td>
+                            <td><span class="avg-score avg-${isNaN(min) ? 'yellow' : avgClass(min)}">${isNaN(min) ? '—' : min}</span></td>
+                            <td><span class="status-badge status-${statusClass(st)}">${st}</span></td>
+                        </tr>`;
+                    }).join('')}</tbody></table>
+                `;
+
+                // === EMPLOYEES PAGE ===
+                document.getElementById('employees-container').innerHTML = rows.map(r => {
+                    const avg = parseNum(r['Средний балл']);
+                    const st = r['Статус'] || 'Норма';
+                    const low = getLowScores(r);
+                    const comment = r['comment'] || r['what_worries'] || r['feel_belonging_comment'] || '';
+                    return `<div class="emp-card">
+                        <div class="emp-header">
+                            <div class="emp-id">ID ${r['User ID']}</div>
+                            <span class="status-badge status-${statusClass(st)}">${st}</span>
+                        </div>
+                        <div class="emp-scores">
+                            <div class="emp-score-item"><span class="emp-score-label">Средний балл</span><span class="avg-score avg-${isNaN(avg) ? 'yellow' : avgClass(avg)}">${isNaN(avg) ? '—' : avg}</span></div>
+                            <div class="emp-score-item"><span class="emp-score-label">Итерация</span><span class="iteration-badge">${typeLabel(r['Тип анкеты'])}</span></div>
+                            <div class="emp-score-item"><span class="emp-score-label">Дата</span><span>${r['Дата'] ? r['Дата'].split(' ')[0] : ''}</span></div>
+                        </div>
+                        ${low.length > 0 ? `<div class="emp-details"><div class="emp-detail-title">Низкие оценки:</div>${low.map(l => `<div class="emp-detail-row"><span>${l.label}</span><span class="avg-score avg-${l.score <= 1 ? 'red' : 'yellow'}">${l.score}</span></div>`).join('')}</div>` : '<div class="emp-details"><div class="emp-detail-title">Нет низких оценок</div></div>'}
+                        ${comment ? `<div class="emp-comment"><div class="emp-detail-title">Комментарий:</div><p>"${comment}"</p></div>` : ''}
+                    </div>`;
                 }).join('');
 
-                tbody.insertAdjacentHTML('afterbegin', realRows);
+                // === ALERTS PAGE ===
+                const alertPageRows = rows.filter(r => r['Статус'] !== 'Норма');
+                document.getElementById('alerts-page-container').innerHTML = alertPageRows.length > 0
+                    ? alertPageRows.map(r => {
+                        const avg = parseNum(r['Средний балл']);
+                        const st = r['Статус'];
+                        const isCrit = st === 'Критично';
+                        const low = getLowScores(r).map(l => `${l.label} (${l.score})`).join(', ');
+                        return `<div class="alert-card" style="border-left-color: ${isCrit ? '#ef4444' : '#f59e0b'}; margin-bottom: 8px;">
+                            <div class="alert-info">
+                                <div class="alert-avatar" ${!isCrit ? 'style="background:#fefce8;color:#d97706;"' : ''}>!</div>
+                                <div class="alert-text">
+                                    <strong>ID ${r['User ID']} — ${typeLabel(r['Тип анкеты'])} — ${r['Дата'] ? r['Дата'].split(' ')[0] : ''}</strong>
+                                    <p>Средний балл ${isNaN(avg) ? '—' : avg}${low ? ' · ' + low : ''}</p>
+                                </div>
+                            </div>
+                            <div class="alert-badge" ${!isCrit ? 'style="background:#fefce8;color:#d97706;"' : ''}>${st}</div>
+                        </div>`;
+                    }).join('')
+                    : '<div style="padding:16px;background:#ecfdf5;border-radius:12px;color:#16a34a;font-weight:600;">✓ Нет алертов</div>';
+
+                // === UPDATE CHARTS ===
+                updateCharts(rows);
 
             } catch (e) {
                 console.warn('Failed to load sheet data:', e);
             }
+        }
+
+        function updateCharts(rows) {
+            // Radar: average per category
+            const categories = {
+                'Руководитель': ['manager_support', 'manager_relations'],
+                'Коллеги': ['colleagues_help', 'colleagues_relations', 'colleagues_support'],
+                'Информация': ['info_clarity', 'info_quality', 'tasks_info'],
+                'Процессы': ['internal_processes', 'understand_processes'],
+                'Рабочее место': ['workplace_ready', 'work_conditions'],
+                'Атмосфера': ['team_atmosphere', 'corporate_culture', 'team_welcome'],
+                'Задачи': ['tasks_satisfaction', 'evaluation_explained', 'clear_goals'],
+            };
+
+            const radarData = Object.entries(categories).map(([label, keys]) => {
+                const vals = [];
+                rows.forEach(r => keys.forEach(k => { const v = parseNum(r[k]); if (!isNaN(v)) vals.push(v); }));
+                return vals.length > 0 ? +(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : 0;
+            });
+
+            if (chartCategory) chartCategory.destroy();
+            chartCategory = new Chart(document.getElementById('categoryChart').getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{ label: 'Средняя оценка', data: radarData, borderColor: '#00AEEF', backgroundColor: 'rgba(0,174,239,0.1)', borderWidth: 2, pointBackgroundColor: '#00AEEF', pointRadius: 4 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 10 } }, pointLabels: { font: { size: 11, weight: '500' } } } }, plugins: { legend: { display: false } } }
+            });
+
+            // Trend: per user over iterations
+            const iterOrder = { week1: 0, month: 1 };
+            const userMap = {};
+            rows.forEach(r => {
+                const uid = r['User ID'];
+                const avg = parseNum(r['Средний балл']);
+                const type = r['Тип анкеты'];
+                if (!userMap[uid]) userMap[uid] = {};
+                if (!isNaN(avg)) userMap[uid][type] = avg;
+            });
+
+            const colors = ['#16a34a', '#dc2626', '#2563eb', '#d97706', '#8b5cf6', '#0891b2'];
+            const trendLabels = ['1 неделя', 'месяц'];
+            const datasets = Object.entries(userMap).slice(0, 5).map(([uid, vals], i) => ({
+                label: `ID ${uid}`,
+                data: [vals['week1'] || null, vals['month'] || null],
+                borderColor: colors[i % colors.length],
+                borderWidth: 2,
+                tension: 0.3,
+                pointRadius: 4,
+            }));
+
+            if (chartTrend) chartTrend.destroy();
+            chartTrend = new Chart(document.getElementById('trendChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: trendLabels, datasets },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 1, max: 5, ticks: { stepSize: 1, font: { size: 11 } } }, x: { ticks: { font: { size: 11 } } } }, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, usePointStyle: true, padding: 16 } } } }
+            });
         }
 
         loadRealData();
@@ -882,102 +801,7 @@
             event.preventDefault();
         }
 
-        // Category chart — radar
-        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-        new Chart(categoryCtx, {
-            type: 'radar',
-            data: {
-                labels: [
-                    'Руководитель',
-                    'Коллеги',
-                    'Информация',
-                    'Процессы',
-                    'Рабочее место',
-                    'Атмосфера',
-                    'Задачи'
-                ],
-                datasets: [{
-                    label: 'Средняя оценка',
-                    data: [4.2, 4.5, 3.8, 3.5, 4.1, 4.3, 3.9],
-                    borderColor: '#00AEEF',
-                    backgroundColor: 'rgba(0, 174, 239, 0.1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#00AEEF',
-                    pointRadius: 4,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        min: 0,
-                        max: 5,
-                        ticks: { stepSize: 1, font: { size: 10 } },
-                        pointLabels: { font: { size: 11, weight: '500' } }
-                    }
-                },
-                plugins: {
-                    legend: { display: false }
-                }
-            }
-        });
-
-        // Trend chart — line
-        const trendCtx = document.getElementById('trendChart').getContext('2d');
-        new Chart(trendCtx, {
-            type: 'line',
-            data: {
-                labels: ['1 неделя', '1 месяц', '2 месяц', '3 месяц'],
-                datasets: [
-                    {
-                        label: 'ID 1034',
-                        data: [3.8, 4.1, 4.4, 4.6],
-                        borderColor: '#16a34a',
-                        backgroundColor: 'rgba(22, 163, 74, 0.05)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true,
-                    },
-                    {
-                        label: 'ID 1042',
-                        data: [3.2, 2.1, null, null],
-                        borderColor: '#dc2626',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        borderDash: [4, 4],
-                    },
-                    {
-                        label: 'Среднее',
-                        data: [3.9, 4.0, 4.1, 4.2],
-                        borderColor: '#94a3b8',
-                        borderWidth: 1.5,
-                        tension: 0.3,
-                        borderDash: [2, 2],
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        min: 1,
-                        max: 5,
-                        ticks: { stepSize: 1, font: { size: 11 } }
-                    },
-                    x: {
-                        ticks: { font: { size: 11 } }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { font: { size: 11 }, usePointStyle: true, padding: 16 }
-                    }
-                }
-            }
-        });
+        // Charts are initialized dynamically in updateCharts() after data loads
     </script>
 </body>
 </html>
