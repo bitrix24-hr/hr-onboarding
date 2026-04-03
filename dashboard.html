@@ -424,7 +424,7 @@
     <div class="layout">
         <aside class="sidebar">
             <div class="sidebar-brand">
-                <img src="onboarding-survey/public/bitrix24-logo.svg" alt="Б24" />
+                <img src="bitrix24-logo.svg" alt="Б24" />
                 <span>Битрикс24</span>
             </div>
             <nav class="sidebar-nav">
@@ -799,6 +799,79 @@
     </div>
 
     <script>
+        // === ЗАГРУЗКА РЕАЛЬНЫХ ДАННЫХ ИЗ GOOGLE SHEETS ===
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1z9pueg9wfw8UCF3kOCfNsXPdVc7tV8vS_BCSxBSCVjs/gviz/tq?tqx=out:csv&sheet=Ответы';
+
+        const FIELD_LABELS = {
+            first_day: 'Первый день', workplace_ready: 'Рабочее место', team_welcome: 'Встреча коллег',
+            tasks_info: 'Информация по задачам', evaluation_explained: 'Критерии оценки на ИС',
+            team_integration: 'Интеграция в команду', facilities_info: 'Бытовые условия',
+            questions_contact: 'К кому обращаться', manager_support: 'Поддержка руководителя',
+            colleagues_help: 'Помощь коллег', info_clarity: 'Доступность информации',
+            info_quality: 'Качество информации', response_speed: 'Скорость ответов',
+            feel_belonging: 'На своём месте', expectations_vs_reality: 'Ожидания vs реальность',
+            work_rhythm: 'Ритм работы', work_conditions: 'Условия труда',
+            salary_fairness: 'Оплата труда', tasks_satisfaction: 'Задачи',
+            colleagues_relations: 'Отношения с коллегами', manager_relations: 'Отношения с руководителем',
+            team_atmosphere: 'Атмосфера', corporate_culture: 'Корп. культура',
+            internal_processes: 'Процессы', know_what_to_learn: 'Знает чему учиться',
+            colleagues_support: 'Помощь коллег', handle_tasks_well: 'Справляется с задачами',
+            enough_skills: 'Хватает навыков', enjoy_work: 'Нравится работа',
+            clear_goals: 'Понимает цели', understand_processes: 'Понятны процессы',
+            opinion_valued: 'Мнение учитывается', communication_speed: 'Коммуникация',
+            feel_productive: 'Продуктивность', values_match: 'Ценности совпадают',
+        };
+
+        function parseCSV(text) {
+            const lines = text.split('\n').filter(l => l.trim());
+            if (lines.length < 2) return [];
+            const headers = lines[0].match(/"([^"]*)"/g).map(h => h.replace(/"/g, ''));
+            return lines.slice(1).map(line => {
+                const values = line.match(/"([^"]*)"/g).map(v => v.replace(/"/g, ''));
+                const obj = {};
+                headers.forEach((h, i) => obj[h] = values[i] || '');
+                return obj;
+            });
+        }
+
+        async function loadRealData() {
+            try {
+                const resp = await fetch(SHEET_CSV_URL);
+                const csv = await resp.text();
+                const rows = parseCSV(csv);
+                if (rows.length === 0) return;
+
+                // Добавляем реальные строки в таблицу на дашборде
+                const tbody = document.querySelector('#page-dashboard table tbody');
+                const realRows = rows.map(r => {
+                    const avg = parseFloat((r['Средний балл'] || '0').replace(',', '.'));
+                    const minScore = parseFloat((r['Мин. оценка'] || '0').replace(',', '.'));
+                    const status = r['Статус'] || 'Норма';
+                    const statusClass = status === 'Критично' ? 'red' : status === 'Внимание' ? 'yellow' : 'green';
+                    const avgClass = avg < 3 ? 'red' : avg < 3.5 ? 'yellow' : 'green';
+                    const minClass = minScore <= 1 ? 'red' : minScore <= 2 ? 'yellow' : 'green';
+                    const typeLabel = r['Тип анкеты'] === 'month' ? 'месяц' : '1 неделя';
+                    const date = r['Дата'] ? r['Дата'].split(' ')[0] : '';
+
+                    return `<tr style="background:#f0f7ff;">
+                        <td><strong>${r['User ID'] || '—'}</strong> 🟢</td>
+                        <td><span class="iteration-badge">${typeLabel}</span></td>
+                        <td>${date}</td>
+                        <td><span class="avg-score avg-${avgClass}">${avg}</span></td>
+                        <td><span class="avg-score avg-${minClass}">${minScore}</span></td>
+                        <td><span class="status-badge status-${statusClass}">${status}</span></td>
+                    </tr>`;
+                }).join('');
+
+                tbody.insertAdjacentHTML('afterbegin', realRows);
+
+            } catch (e) {
+                console.warn('Failed to load sheet data:', e);
+            }
+        }
+
+        loadRealData();
+
         // Navigation
         function showPage(pageId, linkEl) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
