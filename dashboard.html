@@ -418,9 +418,107 @@
             .stats-row { grid-template-columns: repeat(2, 1fr); }
             .charts-row { grid-template-columns: 1fr; }
         }
+
+        /* === Login screen === */
+        .login-overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #0E2F56 0%, #1B4F8A 40%, #2589C5 100%);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-overlay::before, .login-overlay::after {
+            content: ''; position: absolute; border-radius: 50%;
+            opacity: 0.07; pointer-events: none;
+        }
+        .login-overlay::before {
+            width: 500px; height: 500px; background: #2FC6F6;
+            top: -150px; right: -100px;
+        }
+        .login-overlay::after {
+            width: 400px; height: 400px; background: #2FC6F6;
+            bottom: -100px; left: -80px;
+        }
+        .login-card {
+            background: white; border-radius: 20px;
+            padding: 40px 44px; width: 100%; max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            position: relative; z-index: 1;
+        }
+        .login-brand {
+            display: flex; align-items: center; gap: 10px;
+            justify-content: center; margin-bottom: 24px;
+        }
+        .login-brand img { width: 36px; height: 36px; border-radius: 8px; }
+        .login-brand span {
+            font-size: 18px; font-weight: 700; color: #0E2F56;
+        }
+        .login-brand span .blue24 { color: #143AFF; font-weight: 800; }
+        .login-title {
+            font-size: 18px; font-weight: 700; color: #0E2F56;
+            text-align: center; margin-bottom: 4px;
+        }
+        .login-sub {
+            font-size: 13px; color: #64748b;
+            text-align: center; margin-bottom: 28px;
+        }
+        .login-field { margin-bottom: 14px; }
+        .login-label {
+            display: block; font-size: 12px; font-weight: 600;
+            color: #475569; margin-bottom: 6px;
+        }
+        .login-input {
+            width: 100%; padding: 12px 16px;
+            border: 2px solid #e2e8f0; border-radius: 12px;
+            font-family: inherit; font-size: 14px;
+            transition: border-color 0.2s; outline: none;
+        }
+        .login-input:focus { border-color: #00AEEF; }
+        .login-btn {
+            width: 100%; padding: 14px 20px; margin-top: 10px;
+            border: none; border-radius: 12px;
+            background: linear-gradient(135deg, #0E2F56, #1B4F8A);
+            color: white; font-family: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(14, 47, 86, 0.3);
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 47, 86, 0.4);
+        }
+        .login-error {
+            display: none; margin-top: 12px;
+            padding: 10px 14px; background: #fef2f2;
+            border-radius: 10px; color: #dc2626;
+            font-size: 13px; text-align: center;
+        }
+        .login-error.visible { display: block; }
     </style>
 </head>
 <body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-card">
+            <div class="login-brand">
+                <img src="bitrix24-logo.svg" alt="" />
+                <span>Битрикс<span class="blue24">24</span></span>
+            </div>
+            <div class="login-title">HR-дашборд</div>
+            <div class="login-sub">Вход в систему онбординг-фидбека</div>
+
+            <div class="login-field">
+                <label class="login-label">Логин</label>
+                <input type="text" class="login-input" id="login-user" autocomplete="username" />
+            </div>
+            <div class="login-field">
+                <label class="login-label">Пароль</label>
+                <input type="password" class="login-input" id="login-pass" autocomplete="current-password" />
+            </div>
+            <button class="login-btn" onclick="tryLogin()">Войти</button>
+            <div class="login-error" id="login-error">Неверный логин или пароль</div>
+        </div>
+    </div>
+
     <div class="layout">
         <aside class="sidebar">
             <div class="sidebar-brand">
@@ -556,8 +654,62 @@
     </div>
 
     <script>
-        // === ПОЛНОСТЬЮ ДИНАМИЧЕСКИЙ ДАШБОРД ИЗ GOOGLE SHEETS ===
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1z9pueg9wfw8UCF3kOCfNsXPdVc7tV8vS_BCSxBSCVjs/gviz/tq?tqx=out:csv&sheet=Ответы';
+        // === АВТОРИЗАЦИЯ ===
+        // Пароль НЕ хранится в коде — проверяется на стороне Apps Script.
+        // На клиенте только держим логин и кешируем введённый пароль на время сессии,
+        // чтобы дёргать Apps Script для подгрузки данных.
+        const AUTH_USER = 'hr';
+        const AUTH_KEY = 'hr-dashboard-auth';
+        const AUTH_PASS_KEY = 'hr-dashboard-pass';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwALiZOgoTdu4Qs4QvKRcXD9tzeRTzMSILRv8JaTtKsuCg-0KpmfFE4QyLwqvB7izTT/exec';
+
+        async function tryLogin() {
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value;
+            const errEl = document.getElementById('login-error');
+            errEl.classList.remove('visible');
+
+            if (user !== AUTH_USER) {
+                errEl.classList.add('visible');
+                return;
+            }
+
+            // Проверяем пароль через Apps Script
+            try {
+                const resp = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'getData', password: pass }),
+                });
+                const json = await resp.json();
+                if (json.status !== 'ok') {
+                    errEl.classList.add('visible');
+                    return;
+                }
+                sessionStorage.setItem(AUTH_KEY, '1');
+                sessionStorage.setItem(AUTH_PASS_KEY, pass);
+                document.getElementById('login-overlay').classList.add('hidden');
+                renderRows(json.rows);
+            } catch (e) {
+                console.warn('Login error:', e);
+                errEl.classList.add('visible');
+            }
+        }
+
+        // Auto-login if already authenticated in this session
+        if (sessionStorage.getItem(AUTH_KEY) === '1') {
+            document.getElementById('login-overlay').classList.add('hidden');
+        }
+
+        // Submit on Enter
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !document.getElementById('login-overlay').classList.contains('hidden')) {
+                tryLogin();
+            }
+        });
+
+        // === ПОЛНОСТЬЮ ДИНАМИЧЕСКИЙ ДАШБОРД ===
+        // Данные тянутся через Apps Script (POST с паролем), а не из публичного CSV.
 
         const FIELD_LABELS = {
             first_day: 'Первый день', workplace_ready: 'Рабочее место', team_welcome: 'Встреча коллег',
@@ -582,22 +734,10 @@
         // Rating field keys for finding low scores
         const RATING_KEYS = Object.keys(FIELD_LABELS);
 
-        function parseCSV(text) {
-            const lines = text.split('\n').filter(l => l.trim());
-            if (lines.length < 2) return [];
-            const headers = lines[0].match(/"([^"]*)"/g).map(h => h.replace(/"/g, ''));
-            return lines.slice(1).map(line => {
-                const vals = line.match(/"([^"]*)"/g);
-                if (!vals) return null;
-                const obj = {};
-                headers.forEach((h, i) => obj[h] = vals[i] ? vals[i].replace(/"/g, '') : '');
-                return obj;
-            }).filter(r => r && r['User ID'] && r['User ID'].trim());
-        }
-
         function parseNum(val) {
-            if (!val || val === '') return NaN;
-            return parseFloat(val.replace(',', '.'));
+            if (val === null || val === undefined || val === '') return NaN;
+            if (typeof val === 'number') return val;
+            return parseFloat(String(val).replace(',', '.'));
         }
 
         function statusClass(s) { return s === 'Критично' ? 'red' : s === 'Внимание' ? 'yellow' : 'green'; }
@@ -613,11 +753,28 @@
         let chartCategory = null, chartTrend = null;
 
         async function loadRealData() {
+            const pass = sessionStorage.getItem(AUTH_PASS_KEY);
+            if (!pass) return;
             try {
-                const resp = await fetch(SHEET_CSV_URL);
-                const csv = await resp.text();
-                const rows = parseCSV(csv);
-                if (rows.length === 0) {
+                const resp = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'getData', password: pass }),
+                });
+                const json = await resp.json();
+                if (json.status !== 'ok') {
+                    console.warn('Failed to load data:', json.message);
+                    return;
+                }
+                renderRows(json.rows);
+            } catch (e) {
+                console.warn('Failed to load data:', e);
+            }
+        }
+
+        function renderRows(rows) {
+            try {
+                if (!rows || rows.length === 0) {
                     document.getElementById('stats-container').innerHTML = '<div class="stat-card"><div class="stat-label">Нет данных</div><div class="stat-value">0</div></div>';
                     return;
                 }
@@ -790,7 +947,10 @@
             });
         }
 
-        loadRealData();
+        // Загружаем данные только если пользователь авторизован
+        if (sessionStorage.getItem(AUTH_KEY) === '1') {
+            loadRealData();
+        }
 
         // Navigation
         function showPage(pageId, linkEl) {
