@@ -117,6 +117,32 @@
             background: #f8fafc;
         }
 
+        .btn-filter.active {
+            background: #0E2F56;
+            border-color: #0E2F56;
+            color: white;
+        }
+
+        /* Tall charts for questions / departments pages */
+        .chart-card-tall {
+            background: white;
+            border-radius: 14px;
+            padding: 20px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .chart-card-tall .chart-wrap-tall {
+            position: relative;
+            width: 100%;
+        }
+        .empty-state {
+            padding: 32px;
+            background: white;
+            border-radius: 14px;
+            text-align: center;
+            color: #64748b;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
         /* Alert banner */
         .alerts-section {
             margin-bottom: 24px;
@@ -528,6 +554,8 @@
             <nav class="sidebar-nav">
                 <a href="#" class="active" onclick="showPage('dashboard', this)">📊 Дашборд</a>
                 <a href="#" onclick="showPage('employees', this)">👥 Сотрудники</a>
+                <a href="#" onclick="showPage('questions', this)">❓ Вопросы</a>
+                <a href="#" onclick="showPage('departments', this)">🏢 Отделы</a>
                 <a href="#" onclick="showPage('alerts', this)">🔔 Алерты</a>
                 <a href="#" onclick="showPage('settings', this)">⚙️ Настройки</a>
             </nav>
@@ -585,6 +613,44 @@
                 </div>
                 <div class="employee-cards" id="employees-container"></div>
             </div><!-- /page-employees -->
+
+            <!-- PAGE: Questions -->
+            <div class="page" id="page-questions">
+                <div class="main-header">
+                    <div>
+                        <div class="main-title">Рейтинг вопросов</div>
+                        <div class="main-subtitle">Средняя оценка по каждому вопросу — худшие сверху</div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-filter active" data-survey="week1" onclick="switchQuestionsSurvey(this, 'week1')">1 неделя</button>
+                        <button class="btn-filter" data-survey="month" onclick="switchQuestionsSurvey(this, 'month')">Месяц</button>
+                    </div>
+                </div>
+                <div class="chart-card-tall">
+                    <div class="chart-wrap-tall" id="questionsChartWrap">
+                        <canvas id="questionsChart"></canvas>
+                    </div>
+                </div>
+            </div><!-- /page-questions -->
+
+            <!-- PAGE: Departments -->
+            <div class="page" id="page-departments">
+                <div class="main-header">
+                    <div>
+                        <div class="main-title">Рейтинг отделов</div>
+                        <div class="main-subtitle">Средний балл онбординга по отделам — худшие сверху</div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-filter active" data-survey="week1" onclick="switchDepartmentsSurvey(this, 'week1')">1 неделя</button>
+                        <button class="btn-filter" data-survey="month" onclick="switchDepartmentsSurvey(this, 'month')">Месяц</button>
+                    </div>
+                </div>
+                <div class="chart-card-tall">
+                    <div class="chart-wrap-tall" id="departmentsChartWrap">
+                        <canvas id="departmentsChart"></canvas>
+                    </div>
+                </div>
+            </div><!-- /page-departments -->
 
             <!-- PAGE: Alerts (dynamic) -->
             <div class="page" id="page-alerts">
@@ -733,6 +799,10 @@
         // Rating field keys for finding low scores
         const RATING_KEYS = Object.keys(FIELD_LABELS);
 
+        // Ключи вопросов по типам анкеты — для страницы «Вопросы»
+        const WEEK1_KEYS = ['first_day','workplace_ready','team_welcome','tasks_info','evaluation_explained','team_integration','facilities_info','questions_contact','manager_support','colleagues_help','info_clarity','info_quality','response_speed','feel_belonging'];
+        const MONTH_KEYS = ['expectations_vs_reality','feel_belonging','work_rhythm','work_conditions','salary_fairness','tasks_satisfaction','colleagues_relations','manager_relations','team_atmosphere','corporate_culture','internal_processes','know_what_to_learn','colleagues_support','handle_tasks_well','enough_skills','enjoy_work','clear_goals','understand_processes','opinion_valued','communication_speed','feel_productive','values_match'];
+
         function parseNum(val) {
             if (val === null || val === undefined || val === '') return NaN;
             if (typeof val === 'number') return val;
@@ -750,6 +820,17 @@
         }
 
         let chartCategory = null, chartTrend = null;
+        let chartQuestions = null, chartDepartments = null;
+        let questionsSurveyType = 'week1';
+        let departmentsSurveyType = 'week1';
+        let lastRows = [];
+
+        function colorForScore(v) {
+            if (!v || v === 0) return '#e5e7eb';
+            if (v < 3) return '#ef4444';
+            if (v < 4) return '#f59e0b';
+            return '#16a34a';
+        }
 
         async function loadRealData() {
             const pass = sessionStorage.getItem(AUTH_PASS_KEY);
@@ -773,6 +854,7 @@
 
         function renderRows(rows) {
             try {
+                lastRows = rows || [];
                 if (!rows || rows.length === 0) {
                     document.getElementById('stats-container').innerHTML = '<div class="stat-card"><div class="stat-label">Нет данных</div><div class="stat-value">0</div></div>';
                     return;
@@ -946,6 +1028,143 @@
             });
         }
 
+        // === ГРАФИК «ВОПРОСЫ» ===
+        function switchQuestionsSurvey(btn, type) {
+            questionsSurveyType = type;
+            document.querySelectorAll('#page-questions .btn-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderQuestionsChart();
+        }
+
+        function renderQuestionsChart() {
+            const rows = lastRows.filter(r => r['Тип анкеты'] === questionsSurveyType);
+            const keys = questionsSurveyType === 'month' ? MONTH_KEYS : WEEK1_KEYS;
+
+            const stats = keys.map(k => {
+                const scores = rows.map(r => parseNum(r[k])).filter(v => !isNaN(v));
+                const count = scores.length;
+                const avg = count > 0 ? +(scores.reduce((a,b) => a+b, 0) / count).toFixed(2) : 0;
+                const dist = [1,2,3,4,5].map(n => scores.filter(s => s === n).length);
+                return { key: k, label: FIELD_LABELS[k] || k, avg, count, dist };
+            });
+            stats.sort((a,b) => a.avg - b.avg); // худшие сверху
+
+            // Высота — 28px на строку + 40px паддинг
+            const wrap = document.getElementById('questionsChartWrap');
+            wrap.style.height = Math.max(300, stats.length * 28 + 40) + 'px';
+
+            if (chartQuestions) chartQuestions.destroy();
+            chartQuestions = new Chart(document.getElementById('questionsChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: stats.map(s => s.label),
+                    datasets: [{
+                        label: 'Средняя оценка',
+                        data: stats.map(s => s.avg),
+                        backgroundColor: stats.map(s => colorForScore(s.avg)),
+                        borderRadius: 4,
+                        barThickness: 18,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f1f5f9' } },
+                        y: { ticks: { font: { size: 11 } }, grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => {
+                                    const s = stats[ctx.dataIndex];
+                                    if (s.count === 0) return 'Ответов пока нет';
+                                    return `Средняя: ${s.avg} (${s.count} ответов)`;
+                                },
+                                afterLabel: ctx => {
+                                    const s = stats[ctx.dataIndex];
+                                    if (s.count === 0) return '';
+                                    return `Распределение: 1=${s.dist[0]}, 2=${s.dist[1]}, 3=${s.dist[2]}, 4=${s.dist[3]}, 5=${s.dist[4]}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // === ГРАФИК «ОТДЕЛЫ» ===
+        function switchDepartmentsSurvey(btn, type) {
+            departmentsSurveyType = type;
+            document.querySelectorAll('#page-departments .btn-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderDepartmentsChart();
+        }
+
+        function renderDepartmentsChart() {
+            const rows = lastRows.filter(r => r['Тип анкеты'] === departmentsSurveyType);
+            const byDept = {};
+            rows.forEach(r => {
+                const dept = r['Отдел'] || '— без отдела —';
+                const avg = parseNum(r['Средний балл']);
+                if (isNaN(avg)) return;
+                if (!byDept[dept]) byDept[dept] = [];
+                byDept[dept].push(avg);
+            });
+            const stats = Object.entries(byDept).map(([dept, arr]) => ({
+                dept,
+                count: arr.length,
+                avg: +(arr.reduce((a,b) => a+b, 0) / arr.length).toFixed(2),
+            }));
+            stats.sort((a,b) => a.avg - b.avg); // худшие сверху
+
+            const wrap = document.getElementById('departmentsChartWrap');
+            wrap.style.height = Math.max(280, stats.length * 42 + 40) + 'px';
+
+            if (chartDepartments) chartDepartments.destroy();
+            if (stats.length === 0) {
+                // Пустое состояние — рисуем «заглушку» на канве
+                const ctx = document.getElementById('departmentsChart').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                return;
+            }
+            chartDepartments = new Chart(document.getElementById('departmentsChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: stats.map(s => s.dept),
+                    datasets: [{
+                        label: 'Средний балл',
+                        data: stats.map(s => s.avg),
+                        backgroundColor: stats.map(s => colorForScore(s.avg)),
+                        borderRadius: 4,
+                        barThickness: 26,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f1f5f9' } },
+                        y: { ticks: { font: { size: 12, weight: '500' } }, grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => {
+                                    const s = stats[ctx.dataIndex];
+                                    return `Средний: ${s.avg} (${s.count} ответов)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         // Загружаем данные только если пользователь авторизован
         if (sessionStorage.getItem(AUTH_KEY) === '1') {
             loadRealData();
@@ -958,6 +1177,10 @@
             document.getElementById('page-' + pageId).classList.add('active');
             linkEl.classList.add('active');
             event.preventDefault();
+
+            // Графики страницы рендерим только при показе — иначе Chart.js не видит реальных размеров
+            if (pageId === 'questions') renderQuestionsChart();
+            if (pageId === 'departments') renderDepartmentsChart();
         }
 
         // Charts are initialized dynamically in updateCharts() after data loads
