@@ -438,6 +438,176 @@
             line-height: 1.5;
         }
 
+        /* === Раскрывающаяся карточка сотрудника === */
+        .emp-card-c {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .emp-card-c.open { box-shadow: 0 4px 16px rgba(14,47,86,0.08); }
+
+        .emp-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .emp-summary:hover { background: #f8fafc; }
+
+        .emp-summary-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .emp-summary-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .emp-dept {
+            font-size: 13px;
+            color: #64748b;
+        }
+        .emp-count {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .emp-chevron {
+            color: #94a3b8;
+            font-size: 12px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .emp-card-c.open .emp-chevron { transform: rotate(180deg); }
+
+        .emp-expanded {
+            display: none;
+            padding: 4px 24px 20px 24px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .emp-card-c.open .emp-expanded { display: block; }
+
+        .emp-tabs {
+            display: flex;
+            gap: 4px;
+            margin: 16px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .emp-tab {
+            background: none;
+            border: none;
+            padding: 8px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s;
+            margin-bottom: -1px;
+        }
+        .emp-tab:hover { color: #0E2F56; }
+        .emp-tab.active {
+            color: #0E2F56;
+            border-bottom-color: #00AEEF;
+            font-weight: 600;
+        }
+
+        .emp-panel { display: none; padding-top: 8px; }
+        .emp-panel.active { display: block; }
+
+        .emp-meta {
+            display: flex;
+            gap: 28px;
+            padding: 12px 0;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            flex-wrap: wrap;
+        }
+        .emp-meta-item { display: flex; flex-direction: column; gap: 2px; }
+        .emp-meta-label { font-size: 11px; color: #94a3b8; font-weight: 500; }
+        .emp-meta-value { font-size: 14px; font-weight: 600; color: #0E2F56; }
+
+        .emp-section { margin-bottom: 18px; }
+        .emp-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .emp-q-row {
+            display: grid;
+            grid-template-columns: 1fr 120px 32px;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+            font-size: 13px;
+            color: #334155;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+        .emp-q-row:last-child { border-bottom: none; }
+        .emp-q-bar {
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .emp-q-bar-fill { height: 100%; border-radius: 3px; }
+        .emp-q-score { text-align: right; font-weight: 700; }
+
+        .emp-hist-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 32px;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 0;
+            font-size: 13px;
+        }
+        .emp-hist-label { color: #64748b; font-weight: 600; }
+        .emp-hist-bar {
+            height: 16px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .emp-hist-bar-fill { height: 100%; border-radius: 4px; }
+        .emp-hist-count {
+            text-align: right;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .emp-texts > div + div { margin-top: 10px; }
+        .emp-text-label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        .emp-texts p {
+            margin: 0;
+            font-size: 13px;
+            color: #334155;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        .emp-empty {
+            font-size: 13px;
+            color: #94a3b8;
+            font-style: italic;
+            padding: 8px 0;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar { display: none; }
@@ -819,6 +989,175 @@
                 .map(k => ({ label: FIELD_LABELS[k], score: parseNum(row[k]) }));
         }
 
+        // === Рендер «Сотрудники» — группировка по userId, раскрытие inline, табы ===
+        function renderEmployeesGrouped(rows) {
+            if (!rows || rows.length === 0) {
+                return '<div class="emp-empty">Пока нет ответов</div>';
+            }
+
+            // Группируем по userId
+            const groups = new Map();
+            rows.forEach(r => {
+                const uid = String(r['User ID'] || '').trim();
+                if (!uid) return;
+                if (!groups.has(uid)) groups.set(uid, []);
+                groups.get(uid).push(r);
+            });
+
+            // Сортируем сотрудников: алерты сверху, потом по последней дате
+            const ranking = { 'Критично': 0, 'Внимание': 1, 'Норма': 2 };
+            const groupArr = Array.from(groups.entries()).map(([uid, surveys]) => {
+                const latest = surveys.slice().sort((a, b) => String(b['Дата']).localeCompare(String(a['Дата'])))[0];
+                return { uid, surveys, latest };
+            }).sort((a, b) => {
+                const ra = ranking[a.latest['Статус']] ?? 3;
+                const rb = ranking[b.latest['Статус']] ?? 3;
+                if (ra !== rb) return ra - rb;
+                return String(b.latest['Дата']).localeCompare(String(a.latest['Дата']));
+            });
+
+            return groupArr.map(g => renderEmployeeCard(g.uid, g.surveys, g.latest)).join('');
+        }
+
+        function renderEmployeeCard(uid, surveys, latest) {
+            // Сортировка анкет: сначала week1, потом month'ы по дате
+            const sorted = surveys.slice().sort((a, b) => {
+                const ta = a['Тип анкеты'] === 'month' ? 1 : 0;
+                const tb = b['Тип анкеты'] === 'month' ? 1 : 0;
+                if (ta !== tb) return ta - tb;
+                return String(a['Дата']).localeCompare(String(b['Дата']));
+            });
+
+            // Лейблы табов: week1 → «1 неделя», month'ы → «Месяц», «Месяц 2», «Месяц 3»
+            const monthCount = sorted.filter(s => s['Тип анкеты'] === 'month').length;
+            let monthIdx = 0;
+            const tabLabels = sorted.map(s => {
+                if (s['Тип анкеты'] === 'month') {
+                    monthIdx++;
+                    return monthCount > 1 ? `Месяц ${monthIdx}` : 'Месяц';
+                }
+                return '1 неделя';
+            });
+
+            const dept = latest['Отдел'] || '';
+            const st = latest['Статус'] || 'Норма';
+
+            const tabsHtml = sorted.length > 1
+                ? `<div class="emp-tabs">${sorted.map((s, i) =>
+                    `<button class="emp-tab ${i === 0 ? 'active' : ''}" onclick="switchEmpTab(this, ${i})">${tabLabels[i]}</button>`
+                  ).join('')}</div>`
+                : '';
+
+            const panelsHtml = sorted.map((s, i) =>
+                `<div class="emp-panel ${i === 0 ? 'active' : ''}" data-panel="${i}">${renderSurveyPanel(s)}</div>`
+            ).join('');
+
+            return `<div class="emp-card-c" data-uid="${uid}">
+                <div class="emp-summary" onclick="toggleEmpCard(this)">
+                    <div class="emp-summary-left">
+                        <span class="emp-id">ID ${uid}</span>
+                        ${dept ? `<span class="emp-dept">${dept}</span>` : ''}
+                        <span class="emp-count">${sorted.length} ${sorted.length === 1 ? 'анкета' : sorted.length < 5 ? 'анкеты' : 'анкет'}</span>
+                    </div>
+                    <div class="emp-summary-right">
+                        <span class="status-badge status-${statusClass(st)}">${st}</span>
+                        <span class="emp-chevron">▼</span>
+                    </div>
+                </div>
+                <div class="emp-expanded">
+                    ${tabsHtml}
+                    <div class="emp-panels">${panelsHtml}</div>
+                </div>
+            </div>`;
+        }
+
+        function renderSurveyPanel(row) {
+            const type = row['Тип анкеты'];
+            const keys = type === 'month' ? MONTH_KEYS : WEEK1_KEYS;
+            const avg = parseNum(row['Средний балл']);
+            const min = parseNum(row['Мин. оценка']);
+            const st = row['Статус'] || 'Норма';
+            const date = row['Дата'] ? String(row['Дата']).split(' ')[0] : '—';
+
+            const meta = `<div class="emp-meta">
+                <div class="emp-meta-item"><span class="emp-meta-label">Дата</span><span class="emp-meta-value">${date}</span></div>
+                <div class="emp-meta-item"><span class="emp-meta-label">Тип</span><span class="iteration-badge">${typeLabel(type)}</span></div>
+                <div class="emp-meta-item"><span class="emp-meta-label">Средний</span><span class="avg-score avg-${isNaN(avg) ? 'yellow' : avgClass(avg)}">${isNaN(avg) ? '—' : avg}</span></div>
+                <div class="emp-meta-item"><span class="emp-meta-label">Минимальный</span><span class="avg-score avg-${isNaN(min) ? 'yellow' : (min < 3 ? 'red' : min < 4 ? 'yellow' : 'green')}">${isNaN(min) ? '—' : min}</span></div>
+                <div class="emp-meta-item"><span class="emp-meta-label">Статус</span><span class="status-badge status-${statusClass(st)}">${st}</span></div>
+            </div>`;
+
+            // Все ответы по вопросам с цветными барами
+            const answered = keys
+                .map(k => ({ key: k, label: FIELD_LABELS[k] || k, score: parseNum(row[k]) }))
+                .filter(q => !isNaN(q.score));
+            const questionsHtml = answered.length > 0
+                ? answered.map(q => `<div class="emp-q-row">
+                    <span>${q.label}</span>
+                    <div class="emp-q-bar"><div class="emp-q-bar-fill" style="width:${(q.score / 5) * 100}%;background:${colorForScore(q.score)};"></div></div>
+                    <span class="emp-q-score" style="color:${colorForScore(q.score)};">${q.score}</span>
+                </div>`).join('')
+                : '<div class="emp-empty">Ответов нет</div>';
+
+            // Гистограмма распределения по 5 оценкам (5 сверху → 1 снизу)
+            const dist = [0, 0, 0, 0, 0]; // index 0 = "1", 4 = "5"
+            answered.forEach(q => { const s = Math.round(q.score); if (s >= 1 && s <= 5) dist[s - 1]++; });
+            const maxDist = Math.max(...dist, 1);
+            const histRows = [5, 4, 3, 2, 1].map(score => {
+                const count = dist[score - 1];
+                const widthPct = (count / maxDist) * 100;
+                const color = colorForScore(score);
+                return `<div class="emp-hist-row">
+                    <span class="emp-hist-label">${score} ★</span>
+                    <div class="emp-hist-bar">${count > 0 ? `<div class="emp-hist-bar-fill" style="width:${widthPct}%;background:${color};"></div>` : ''}</div>
+                    <span class="emp-hist-count">${count}</span>
+                </div>`;
+            }).join('');
+
+            // Текстовые ответы (только те, что заполнены)
+            const TEXT_LABELS = {
+                feel_belonging_comment: 'Комментарий к «На своём месте»',
+                what_you_like: 'Что нравится больше всего',
+                what_worries: 'Что больше всего волновало',
+                comment: 'Общий комментарий',
+            };
+            const textItems = Object.entries(TEXT_LABELS)
+                .map(([k, label]) => ({ key: k, label, text: (row[k] || '').toString().trim() }))
+                .filter(t => t.text);
+            const textsHtml = textItems.length > 0
+                ? `<div class="emp-texts">${textItems.map(t =>
+                    `<div><span class="emp-text-label">${t.label}</span><p>«${t.text}»</p></div>`
+                ).join('')}</div>`
+                : '<div class="emp-empty">Текстовых ответов нет</div>';
+
+            return `${meta}
+                <div class="emp-section">
+                    <div class="emp-section-title">Все ответы (${answered.length})</div>
+                    ${questionsHtml}
+                </div>
+                <div class="emp-section">
+                    <div class="emp-section-title">Распределение оценок</div>
+                    ${histRows}
+                </div>
+                <div class="emp-section">
+                    <div class="emp-section-title">Текстовые ответы</div>
+                    ${textsHtml}
+                </div>`;
+        }
+
+        function toggleEmpCard(headerEl) {
+            const card = headerEl.closest('.emp-card-c');
+            if (card) card.classList.toggle('open');
+        }
+
+        function switchEmpTab(btn, idx) {
+            const card = btn.closest('.emp-card-c');
+            if (!card) return;
+            card.querySelectorAll('.emp-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            card.querySelectorAll('.emp-panel').forEach(p => p.classList.toggle('active', String(p.dataset.panel) === String(idx)));
+        }
+
         let chartCategory = null, chartTrend = null;
         let chartQuestions = null, chartDepartments = null;
         let questionsSurveyType = 'week1';
@@ -920,26 +1259,8 @@
                     }).join('')}</tbody></table>
                 `;
 
-                // === EMPLOYEES PAGE ===
-                document.getElementById('employees-container').innerHTML = rows.map(r => {
-                    const avg = parseNum(r['Средний балл']);
-                    const st = r['Статус'] || 'Норма';
-                    const low = getLowScores(r);
-                    const comment = r['comment'] || r['what_worries'] || r['feel_belonging_comment'] || '';
-                    return `<div class="emp-card">
-                        <div class="emp-header">
-                            <div class="emp-id">ID ${r['User ID']}</div>
-                            <span class="status-badge status-${statusClass(st)}">${st}</span>
-                        </div>
-                        <div class="emp-scores">
-                            <div class="emp-score-item"><span class="emp-score-label">Средний балл</span><span class="avg-score avg-${isNaN(avg) ? 'yellow' : avgClass(avg)}">${isNaN(avg) ? '—' : avg}</span></div>
-                            <div class="emp-score-item"><span class="emp-score-label">Итерация</span><span class="iteration-badge">${typeLabel(r['Тип анкеты'])}</span></div>
-                            <div class="emp-score-item"><span class="emp-score-label">Дата</span><span>${r['Дата'] ? r['Дата'].split(' ')[0] : ''}</span></div>
-                        </div>
-                        ${low.length > 0 ? `<div class="emp-details"><div class="emp-detail-title">Низкие оценки:</div>${low.map(l => `<div class="emp-detail-row"><span>${l.label}</span><span class="avg-score avg-${l.score <= 1 ? 'red' : 'yellow'}">${l.score}</span></div>`).join('')}</div>` : '<div class="emp-details"><div class="emp-detail-title">Нет низких оценок</div></div>'}
-                        ${comment ? `<div class="emp-comment"><div class="emp-detail-title">Комментарий:</div><p>"${comment}"</p></div>` : ''}
-                    </div>`;
-                }).join('');
+                // === EMPLOYEES PAGE === (раскрывающиеся карточки с группировкой по userId)
+                document.getElementById('employees-container').innerHTML = renderEmployeesGrouped(rows);
 
                 // === ALERTS PAGE ===
                 const alertPageRows = rows.filter(r => r['Статус'] !== 'Норма');
